@@ -1,0 +1,15 @@
+{{define "title"}}message #{{.Message.ID}}{{end}}
+
+{{define "main"}}
+    <div class='message'>
+        <div class='metadata'>
+            <strong>{{.Message.Title}}</strong>
+            <span>#{{.Message.ID}}</span>
+        </div>
+        <pre><code>{{.Message.Content}}</code></pre>
+        <div class='metadata'>
+            <time>Created: {{.Message.Created}}</time>
+            <time>Expires: {{.Message.Expires}}</time>
+    </div>
+</div>
+{{end}}
