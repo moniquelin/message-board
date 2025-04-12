@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"message-board/internal/models"
 	"net/http"
@@ -12,9 +13,10 @@ import (
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	messages *models.MessageModel
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	messages      *models.MessageModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -32,10 +34,17 @@ func main() {
 
 	defer db.Close()
 
+	// Initialize a new template cache...
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		messages: &models.MessageModel{DB: db},
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		messages:      &models.MessageModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	// Initialize a new http.Server struct. We set the Addr and Handler fields so

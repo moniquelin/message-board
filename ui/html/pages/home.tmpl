@@ -12,7 +12,7 @@
         {{range .Messages}}
         <tr>
             <td><a href='/message/view?id={{.ID}}'>{{.Title}}</a></td>
-            <td>{{.Created}}</td>
+            <td>{{humanDate .Created}}</td>
             <td>#{{.ID}}</td>
         </tr>
         {{end}}
