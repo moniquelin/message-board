@@ -82,10 +82,10 @@ func (app *application) messageCreate(w http.ResponseWriter, r *http.Request) {
 // must be exported in order to be read by the html/template package when
 // rendering the template.
 type messageCreateForm struct {
-	Title               string `form: "title"`
-	Content             string `form: "content"`
-	Expires             int    `form: "expires"`
-	validator.Validator `form: "-"`
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) messageCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -117,6 +117,10 @@ func (app *application) messageCreatePost(w http.ResponseWriter, r *http.Request
 		app.serverError(w, err)
 		return
 	}
+
+	// Use the Put() method to add a string value ("Message successfully
+	// created!") and the corresponding key ("flash") to the session data.
+	app.sessionManager.Put(r.Context(), "flash", "Message successfully created!")
 
 	// Redirect the user to the relevant page for the message.
 	http.Redirect(w, r, fmt.Sprintf("/message/view/%d", id), http.StatusSeeOther)

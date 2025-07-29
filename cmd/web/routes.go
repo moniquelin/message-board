@@ -23,14 +23,19 @@ func (app *application) routes() http.Handler {
 	// Update the pattern for the route for the static files.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
-	// And then create the routes using the appropriate methods, patterns and
-	// handlers.
-	router.HandlerFunc(http.MethodGet, "/", app.home)
-	router.HandlerFunc(http.MethodGet, "/message/view/:id", app.messageView)
-	router.HandlerFunc(http.MethodGet, "/message/create", app.messageCreate)
-	router.HandlerFunc(http.MethodPost, "/message/create", app.messageCreatePost)
-	// Create the middleware chain as normal.
+
+	// Create a new middleware chain containing the middleware specific to our
+	// dynamic application routes. For now, this chain will only contain the
+	// LoadAndSave session middleware but we'll add more to it later.
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
+	// Update these routes to use the new dynamic middleware chain followed by
+	// the appropriate handler function. Note that because the alice ThenFunc()
+	// method returns a http.Handler (rather than a http.HandlerFunc) we also
+	// need to switch to registering the route using the router.Handler() method.
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.home))
+	router.Handler(http.MethodGet, "/message/view/:id", dynamic.ThenFunc(app.messageView))
+	router.Handler(http.MethodGet, "/message/create", dynamic.ThenFunc(app.messageCreate))
+	router.Handler(http.MethodPost, "/message/create", dynamic.ThenFunc(app.messageCreatePost))
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
-	// Wrap the router with the middleware and return it as normal.
 	return standard.Then(router)
 }

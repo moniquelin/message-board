@@ -14,6 +14,7 @@ type templateData struct {
 	Message     *models.Message
 	Messages    []*models.Message
 	Form        any
+	Flash       string // Add a Flash field to the templateData struct.
 }
 
 // Create a humanDate function which returns a nicely formatted string
