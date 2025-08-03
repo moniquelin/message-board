@@ -10,11 +10,12 @@ import (
 // Define a templateData type to act as the holding structure for
 // any dynamic data that we want to pass to our HTML templates.
 type templateData struct {
-	CurrentYear int
-	Message     *models.Message
-	Messages    []*models.Message
-	Form        any
-	Flash       string // Add a Flash field to the templateData struct.
+	CurrentYear     int
+	Message         *models.Message
+	Messages        []*models.Message
+	Form            any
+	Flash           string // Add a Flash field to the templateData struct.
+	IsAuthenticated bool
 }
 
 // Create a humanDate function which returns a nicely formatted string
